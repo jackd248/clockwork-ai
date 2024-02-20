@@ -29,7 +29,7 @@
 
 
 import logging
-from lib.waveshare_epd import epdconfig
+from waveshare_epd import epdconfig
 
 # Display resolution
 EPD_WIDTH = 122
