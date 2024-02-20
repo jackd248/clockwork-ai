@@ -13,8 +13,7 @@ E.g.
 
 ## Functions
 
-- `python3 clockwork time` - generates ai poem of current time
-- `python3 clockwork intro` - display intro 
+- `python3 clockwork` - generates ai poem of current time
 - `python3 clockwork clear` - clear display
 - `python3 clockwork demo` - demo poems to display
 - `python3 clockwork storage` - demo storage write and read process
@@ -22,5 +21,7 @@ E.g.
 ## PreRequirements
 
 raspberry pi zero + waveshare 2.13inch e-Paper
+
+Based on the waveshare [tutorial](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_Manual#Python).
 
 todo

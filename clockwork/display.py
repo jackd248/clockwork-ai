@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding:utf-8 -*-
+
 import os
 import sys
 import logging
@@ -13,14 +16,6 @@ from waveshare_epd import epd2in13_V3
 from PIL import Image, ImageDraw, ImageFont
 
 epd = None
-demo_poems = [
-    "Am Horizont, wo Lichter blüh\'n,\nzeigt die Uhr 17:17, in Abendglüh\'n.",
-    "Beim Dämmerlicht, so zart und fein, \nschlägt es 17:16, der Tag neigt sich dem Sein.",
-    "Die Schatten lang, der Abend naht, \n17:15, in stiller Stadt.",
-    "Das Tageslicht schwindet sacht,\n17:14, die Nacht erwacht.",
-    "In sanftem Licht, das Abendrot, \nzeigt 17:13, der Tag im Lot.",
-    "Der Tag neigt sich, leis und mild,\num 17:12, die Welt verhüllt."
-]
 font_size = 20
 font_size_line_config = {
     24: {
@@ -60,15 +55,16 @@ def intro():
     image = Image.new('1', (epd.height, epd.width), 255)
     font = ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), 24)
     draw = ImageDraw.Draw(image)
-    draw.text((55, 45), 'clockwork/ai', font=font, fill=0)
+    draw.text((52, 45), 'clockwork/AI', font=font, fill=0)
 
-    draw.line([(42, 80), (110, 80)], fill=0, width=2)
-    draw.line([(47, 85), (80, 85)], fill=0, width=2)
-    draw.line([(42, 80), (42, 60)], fill=0, width=2)
+    draw.line([(39, 80), (110, 80)], fill=0, width=2)
+    draw.line([(44, 85), (80, 85)], fill=0, width=2)
+    draw.line([(39, 80), (39, 60)], fill=0, width=2)
 
-    draw.line([(197, 40), (150, 40)], fill=0, width=2)
-    draw.line([(197, 40), (197, 60)], fill=0, width=2)
+    draw.line([(199, 40), (150, 40)], fill=0, width=2)
+    draw.line([(199, 40), (199, 60)], fill=0, width=2)
     epd.display(epd.getbuffer(image))
+    time.sleep(3)
 
 
 def draw_text(text):
@@ -104,14 +100,6 @@ def splint_lines(text):
 
         return splint_lines(text)
     return lines
-
-
-def demo():
-    logging.info('Demo')
-    for slogan in demo_poems:
-        logging.info('Demo')
-        draw_text(slogan)
-        time.sleep(3)
 
 
 def clear():

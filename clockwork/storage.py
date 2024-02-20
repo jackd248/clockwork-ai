@@ -1,7 +1,8 @@
-import os
-import sys
-import logging
+#!/usr/bin/python
+# -*- coding:utf-8 -*-
 
+import os
+import logging
 import json
 import random
 vardir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'var')

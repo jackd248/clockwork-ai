@@ -7,7 +7,7 @@ Main script
 
 import argparse
 import display
-import ai
+import poem
 import storage
 
 
@@ -18,18 +18,19 @@ def main():
     """
     args = get_arguments()
 
-    if args.function == "intro":
-        display.intro()
-    elif args.function == "clear":
+    display.intro()
+
+    if args.function == "clear":
         display.clear()
     elif args.function == "demo":
-        display.demo()
+        poem.demo()
+        display.clear()
     elif args.function == "storage":
         storage.write("10:21", "Lorem ipsum")
         print(storage.read("10:21"))
-    elif args.function == "time":
-        ai.init()
-        ai.current_time_poem()
+    else:
+        poem.init()
+        poem.current_time_poem()
 
 
 def get_arguments():
@@ -39,7 +40,7 @@ def get_arguments():
     parser = argparse.ArgumentParser(prog='clockwork',
                                      description='todo')
     parser.add_argument('function',
-                        help='todo',
+                        help='Additional function to test the script',
                         nargs='?',
                         type=str)
 
