@@ -2,6 +2,8 @@
 # -*- coding:utf-8 -*-
 
 import os
+import sys
+
 import openai
 import random
 from dotenv import load_dotenv
@@ -29,12 +31,17 @@ def init():
     print("[Info] Initialize openai client")
     global client
     load_dotenv(envpath)
+
+    if os.environ.get("OPENAI_API_KEY") == "":
+        sys.exit("[Error] Missing openai api key")
+
     client = openai.OpenAI(
         api_key=os.environ.get("OPENAI_API_KEY"),
     )
 
 
 def current_time_poem():
+    print("[Info] Create current time poem")
     current_time = datetime.now().strftime("%H:%M")
     chat_completion = None
 
@@ -49,24 +56,46 @@ def current_time_poem():
 
     poem = ask_ai(os.environ.get("OPENAI_CLOCKWORK_PROMPT"), current_time)
     if poem:
+        if bool(os.environ.get("CLOCKWORK_VALIDATE")):
+            poem = ask_ai(
+                os.environ.get("OPENAI_CLOCKWORK_PROMPT"),
+                current_time,
+                poem,
+                os.environ.get("OPENAI_CLOCKWORK_VALIDATION_PROMPT").replace("<current_time>", current_time)
+            )
+
         print("[Poem] " + current_time + "\n" + poem)
         storage.write(current_time, poem)
         display.draw_text(poem, (current_time if bool(os.environ.get("CLOCKWORK_SHOW_TIME")) else False))
 
 
-def ask_ai(system, user):
+def ask_ai(system, user, assistant=None, validation=None):
+    print("[Info] Ask AI")
+    messages = [
+        {
+            "role": "system",
+            "content": system,
+        },
+        {
+            "role": "user",
+            "content": user
+        },
+    ]
+    if assistant is not None and validation is not None:
+        messages += [
+            {
+                "role": "assistant",
+                "content": assistant,
+            },
+            {
+                "role": "user",
+                "content": validation
+            },
+        ]
+
     try:
         chat_completion = client.chat.completions.create(
-            messages=[
-                {
-                    "role": "system",
-                    "content": system,
-                },
-                {
-                    "role": "user",
-                    "content": user
-                },
-            ],
+            messages=messages,
             model=model,
         )
     except openai.APIConnectionError as e:
@@ -92,4 +121,3 @@ def demo():
     for slogan in demo_poems:
         display.draw_text(slogan, "Demo")
         time.sleep(3)
-

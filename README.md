@@ -28,10 +28,10 @@ The storage component stores the received poems to json files, e.g. `var/12/1245
 
 ### hardware
 
-- raspberry pi zero 
-- waveshare 2.13inch e-Paper
+- [raspberry pi zero](https://www.raspberrypi.com/products/raspberry-pi-zero/)
+- [waveshare 2.13inch e-Paper](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT)
 
-### links
+### preparation
 
 - based on the waveshare [tutorial](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_Manual#Python)
 - see installation instructions for needed libraries
@@ -57,7 +57,7 @@ python3 clockwork demo
 
 ### permanent setup
 
-Setup a periodic cronjob to update the poem e.g. every minute:
+Set up a periodic cronjob to update the poem e.g. every minute:
 
 ```bash
 crontab -e
@@ -67,7 +67,7 @@ crontab -e
 * * * * * python3 /path/to/clockwork/dir clockwork
 ```
 
-Or setup a cronjob to update the poem on daytime:
+Or set up a cronjob to update the poem on daytime:
 
 ```cronexp
 * 06-23 * * * python3 /path/to/clockwork/dir clockwork
@@ -76,11 +76,19 @@ Or setup a cronjob to update the poem on daytime:
 
 > Note that you should clear the e-ink screen to avoid display issues.
 
-### configuration
+## configuration
+
+### prompt
 
 You can adjust the default openai prompt to adjust the poem results or the desired language if you edit the environment variable `OPENAI_CLOCKWORK_PROMPT` within your `.env` file:
 ```dotenv
 OPENAI_CLOCKWORK_PROMPT="You are a clock that shows the time in a two-line poem."
 ```
+
+### validation
+
+To improve the poem results by the ai, you can validate the response from the api again by the ai enabling the environment variable `CLOCKWORK_VALIDATE`. Therefore, a second request is sent to openai with the initial conversation messages and additional the `OPENAI_CLOCKWORK_VALIDATION_PROMPT`. 
+
+### show time
 
 If you want to compare current time with the generated poem, activate the `CLOCKWORK_SHOW_TIME` environment variable to display the time in the bottom right corner.

@@ -24,7 +24,7 @@ font_size_line_config = {
     20: {
         "lines": 5,
         "width": 24,
-        "line_height": 2
+        "line_height": 0
     },
     16: {
         "lines": 5,
@@ -67,7 +67,22 @@ def intro():
     draw.line([(199, 40), (150, 40)], fill=0, width=2)
     draw.line([(199, 40), (199, 60)], fill=0, width=2)
     epd.display(epd.getbuffer(image))
-    time.sleep(2)
+    time.sleep(0.5)
+
+    draw.line([(115, 80), (117, 80)], fill=0, width=2)
+    epd.displayPartial(epd.getbuffer(image))
+    time.sleep(0.5)
+
+    draw.line([(120, 80), (122, 80)], fill=0, width=2)
+    epd.displayPartial(epd.getbuffer(image))
+    time.sleep(0.5)
+
+    draw.line([(125, 80), (127, 80)], fill=0, width=2)
+    epd.displayPartial(epd.getbuffer(image))
+    time.sleep(0.5)
+
+    epd.init()
+    epd.Clear(0xFF)
 
 
 def draw_text(text, additional_text=False):
