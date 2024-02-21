@@ -45,8 +45,8 @@ The storage component stores the received poems to json files, e.g. `var/12/1245
 
 ```bash
 # get python app
-git clone https://github.com/jackd248/clockwork-1.git
-cd clockwork-1
+git clone https://github.com/jackd248/clockwork-ai.git
+cd clockwork-ai
 # install python requirements
 pip3 install -r requirements.txt
 # prepare settings and store own openai api key!
