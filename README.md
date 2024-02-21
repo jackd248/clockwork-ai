@@ -11,17 +11,74 @@ E.g.
 > Am Horizont, wo Lichter blüh'n,
 > zeigt die Uhr 17:17, in Abendglüh'n.
 
-## Functions
+![clockwork prototype](img/insight.jpeg)
+
+## functions
+
+General functionalities of the python app:
 
 - `python3 clockwork` - generates ai poem of current time
 - `python3 clockwork clear` - clear display
 - `python3 clockwork demo` - demo poems to display
 - `python3 clockwork storage` - demo storage write and read process
 
-## PreRequirements
+The storage component stores the received poems to json files, e.g. `var/12/1245.json`. If the environment variable `POEM_STORE` is set to true, the algorithm uses stored poems instead of calling the api to reuse them. 
 
-raspberry pi zero + waveshare 2.13inch e-Paper
+## project log
 
-Based on the waveshare [tutorial](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_Manual#Python).
+### hardware
 
-todo
+- raspberry pi zero 
+- waveshare 2.13inch e-Paper
+
+### links
+
+- based on the waveshare [tutorial](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_Manual#Python)
+- see installation instructions for needed libraries
+
+
+### prerequirements
+
+- api key from openai: https://platform.openai.com/api-keys
+
+### installation
+
+```bash
+# get python app
+git clone https://github.com/jackd248/clockwork-1.git
+cd clockwork-1
+# install python requirements
+pip3 install -r requirements.txt
+# prepare settings and store own openai api key!
+cp .env.dist .env
+# run demo
+python3 clockwork demo
+```
+
+### permanent setup
+
+Setup a periodic cronjob to update the poem e.g. every minute:
+
+```bash
+crontab -e
+```
+
+```cronexp
+* * * * * python3 /path/to/clockwork/dir clockwork
+```
+
+Or setup a cronjob to update the poem on daytime:
+
+```cronexp
+* 06-23 * * * python3 /path/to/clockwork/dir clockwork
+10 23 * * * python3 /path/to/clockwork/dir clockwork clear
+```
+
+> Note that you should clear the e-ink screen to avoid display issues.
+
+### configuration
+
+You can adjust the default openai prompt to adjust the poem results or the desired language if you edit the environment variable `OPENAI_PROMPT` within your `.env` file:
+```dotenv
+OPENAI_PROMPT="You are a clock that shows the time in a two-line poem."
+```
