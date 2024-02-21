@@ -2,7 +2,6 @@
 # -*- coding:utf-8 -*-
 
 import os
-import logging
 import openai
 from dotenv import load_dotenv
 from datetime import datetime
@@ -26,7 +25,7 @@ demo_poems = [
 
 
 def init():
-    logging.info("Initialize openai client")
+    print("[Info] Initialize openai client")
     global client
     load_dotenv(envpath)
     client = openai.OpenAI(
@@ -81,9 +80,8 @@ def current_time_poem():
 
 
 def demo():
-    logging.info('Demo')
+    print("[Info] Demo")
     for slogan in demo_poems:
-        logging.info('Demo')
         display.draw_text(slogan)
         time.sleep(3)
 

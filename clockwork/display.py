@@ -3,8 +3,6 @@
 
 import os
 import sys
-import logging
-
 fontdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'font')
 libdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lib')
 if os.path.exists(libdir):
@@ -42,7 +40,7 @@ font_size_line_config = {
 
 
 def init():
-    logging.info("Initialize display")
+    print("[Info] Initialize display")
     global epd
     epd = epd2in13_V3.EPD()
     epd.init()
@@ -55,7 +53,7 @@ def intro():
     image = Image.new('1', (epd.height, epd.width), 255)
     font = ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), 24)
     draw = ImageDraw.Draw(image)
-    draw.text((52, 45), 'clockwork/AI', font=font, fill=0)
+    draw.text((52, 45), 'clockwork/ai', font=font, fill=0)
 
     draw.line([(39, 80), (110, 80)], fill=0, width=2)
     draw.line([(44, 85), (80, 85)], fill=0, width=2)
@@ -83,6 +81,8 @@ def draw_text(text):
         width, height = font.getsize(line)
         draw.text((5, y_text), line, font=font, fill=0)
         y_text += height
+
+
     epd.display(epd.getbuffer(image))
 
 
@@ -106,7 +106,7 @@ def clear():
     if epd is None:
         init()
 
-    logging.info("Clear display")
+    print("[Info] Clear display")
     epd.init()
     epd.Clear(0xFF)
     epd.sleep()
