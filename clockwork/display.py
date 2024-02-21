@@ -18,23 +18,28 @@ font_size = 20
 font_size_line_config = {
     24: {
         "lines": 4,
-        "width": 20
+        "width": 20,
+        "line_height": 2
     },
     20: {
         "lines": 5,
-        "width": 24
+        "width": 24,
+        "line_height": 2
     },
     16: {
-        "lines": 6,
-        "width": 28
+        "lines": 5,
+        "width": 32,
+        "line_height": 4
     },
     12: {
-        "lines": 7,
-        "width": 32
+        "lines": 6,
+        "width": 40,
+        "line_height": 6
     },
     8: {
         "lines": 8,
-        "width": 36
+        "width": 56,
+        "line_height": 8
     }
 }
 
@@ -51,7 +56,7 @@ def intro():
         init()
 
     image = Image.new('1', (epd.height, epd.width), 255)
-    font = ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), 24)
+    font = ImageFont.truetype(os.path.join(fontdir, "Font.ttc"), 24)
     draw = ImageDraw.Draw(image)
     draw.text((52, 45), 'clockwork/ai', font=font, fill=0)
 
@@ -62,10 +67,10 @@ def intro():
     draw.line([(199, 40), (150, 40)], fill=0, width=2)
     draw.line([(199, 40), (199, 60)], fill=0, width=2)
     epd.display(epd.getbuffer(image))
-    time.sleep(3)
+    time.sleep(2)
 
 
-def draw_text(text):
+def draw_text(text, additional_text=False):
     global font_size
     font_size = 24
     if epd is None:
@@ -75,13 +80,22 @@ def draw_text(text):
     draw = ImageDraw.Draw(image)
 
     lines = splint_lines(text)
-    font = ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), font_size)
-    y_text = 5
+    font = ImageFont.truetype(os.path.join(fontdir, "Font.ttc"), font_size)
+    y_text = 2
     for line in lines:
         width, height = font.getsize(line)
-        draw.text((5, y_text), line, font=font, fill=0)
-        y_text += height
+        draw.text((2, y_text), line, font=font, fill=0)
+        y_text += height + font_size_line_config[font_size]["line_height"]
 
+    if additional_text:
+        draw.text(
+            (epd.height, epd.width),
+            str(additional_text),
+            font=ImageFont.truetype(os.path.join(fontdir, "Font.ttc"), 10),
+            fill=0,
+            align="right",
+            anchor="rb"
+        )
 
     epd.display(epd.getbuffer(image))
 
