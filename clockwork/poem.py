@@ -3,6 +3,7 @@
 
 import os
 import openai
+import random
 from dotenv import load_dotenv
 from datetime import datetime
 import display
@@ -37,24 +38,33 @@ def current_time_poem():
     current_time = datetime.now().strftime("%H:%M")
     chat_completion = None
 
-    # reuse previous poems to save rate limit
-    if bool(os.environ.get("OPENAI_PROMPT")):
+    # check if option for CLOCKWORK_REUSE is enabled and random source decision (api vs storage)
+    if bool(os.environ.get("CLOCKWORK_REUSE")) and bool(random.getrandbits(1)):
+        # reuse previous poems to save rate limit
         previous_poem = storage.read(current_time)
         if previous_poem:
             print("[" + current_time + "]\n" + previous_poem)
             display.draw_text(previous_poem)
             return
 
+    poem = ask_ai(os.environ.get("OPENAI_CLOCKWORK_PROMPT"), current_time)
+    if poem:
+        print("[Poem] " + current_time + "\n" + poem)
+        storage.write(current_time, poem)
+        display.draw_text(poem, (current_time if bool(os.environ.get("CLOCKWORK_SHOW_TIME")) else False))
+
+
+def ask_ai(system, user):
     try:
         chat_completion = client.chat.completions.create(
             messages=[
                 {
                     "role": "system",
-                    "content": os.environ.get("OPENAI_PROMPT"),
+                    "content": system,
                 },
                 {
                     "role": "user",
-                    "content": current_time
+                    "content": user
                 },
             ],
             model=model,
@@ -62,26 +72,24 @@ def current_time_poem():
     except openai.APIConnectionError as e:
         print("[Error] The server could not be reached")
         print(e.__cause__)
-        return
+        return False
     except openai.RateLimitError as e:
         print("[Error] RateLimit reached")
-        return
+        return False
     except openai.APIStatusError as e:
         print("[Error]")
         print(e.status_code)
         print(e.response)
-        return
+        return False
 
     if chat_completion is not None:
-        poem = chat_completion.choices[0].message.content
-        print("[" + current_time + "]\n" + poem)
-        storage.write(current_time, poem)
-        display.draw_text(poem)
+        return chat_completion.choices[0].message.content
+    return False
 
 
 def demo():
     print("[Info] Demo")
     for slogan in demo_poems:
-        display.draw_text(slogan)
+        display.draw_text(slogan, "Demo")
         time.sleep(3)
 
