@@ -4,7 +4,7 @@
 > This project is inspired by creative mind Matt Web and his [Poem/1](https://poem.town/) clock. 
 > 
 
-Simple diy clock project to generate ai poems by current time.
+Simple diy clock project to generate ai poems by current time using a raspberry pi zero + e-ink display.
 
 > Am Horizont, wo Lichter blüh'n,<br/>
 > zeigt die Uhr 17:17, in Abendglüh'n.
@@ -70,6 +70,7 @@ crontab -e
 Or set up a cronjob to update the poem on daytime:
 
 ```cronexp
+@reboot python3 /path/to/clockwork/dir clockwork intro
 * 06-23 * * * python3 /path/to/clockwork/dir clockwork
 10 23 * * * python3 /path/to/clockwork/dir clockwork clear
 ```
@@ -77,6 +78,8 @@ Or set up a cronjob to update the poem on daytime:
 > Note that you should clear the e-ink screen to avoid display issues.
 
 ## configuration
+
+All configuration options are available within your `.env` file.
 
 ### prompt
 

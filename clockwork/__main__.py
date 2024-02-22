@@ -19,11 +19,12 @@ def main():
     """
     args = get_arguments()
 
-    display.intro()
-
     if args.function == "clear":
         display.clear()
+    elif args.function == "intro":
+        display.intro()
     elif args.function == "demo":
+        display.intro()
         poem.demo()
         display.clear()
     elif args.function == "storage":

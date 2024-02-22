@@ -14,7 +14,6 @@ import storage
 
 envpath = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), ".env")
 
-model = "gpt-3.5-turbo"
 client = None
 
 demo_poems = [
@@ -96,7 +95,7 @@ def ask_ai(system, user, assistant=None, validation=None):
     try:
         chat_completion = client.chat.completions.create(
             messages=messages,
-            model=model,
+            model=os.environ.get("OPENAI_API_MODEL"),
         )
     except openai.APIConnectionError as e:
         print("[Error] The server could not be reached")
