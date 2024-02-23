@@ -6,13 +6,11 @@ import sys
 
 import openai
 import random
-from dotenv import load_dotenv
 from datetime import datetime
 import display
 import time
 import storage
-
-envpath = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), ".env")
+import logging
 
 client = None
 
@@ -29,7 +27,6 @@ demo_poems = [
 def init():
     print("[Info] Initialize openai client")
     global client
-    load_dotenv(envpath)
 
     if os.environ.get("OPENAI_API_KEY") == "":
         sys.exit("[Error] Missing openai api key")
@@ -49,27 +46,48 @@ def current_time_poem():
         # reuse previous poems to save rate limit
         previous_poem = storage.read(current_time)
         if previous_poem:
-            print("[" + current_time + "]\n" + previous_poem)
+            logging.info(
+                "[local] %s // \"%s\"",
+                current_time,
+                previous_poem.replace('\r', '').replace('\n', '')
+            )
             display.draw_text(previous_poem)
             return
 
     poem = ask_ai(os.environ.get("OPENAI_CLOCKWORK_PROMPT"), current_time)
     if poem:
         if bool(os.environ.get("CLOCKWORK_VALIDATE")):
+            original_poem = poem
             poem = ask_ai(
                 os.environ.get("OPENAI_CLOCKWORK_PROMPT"),
                 current_time,
                 poem,
                 os.environ.get("OPENAI_CLOCKWORK_VALIDATION_PROMPT").replace("<current_time>", current_time)
             )
+            logging.info(
+                "[openai] %s // \"%s\" --> \"%s\"",
+                current_time,
+                original_poem.replace('\r', '').replace('\n', ''),
+                poem.replace('\r', '').replace('\n', '')
+            )
 
-        print("[Poem] " + current_time + "\n" + poem)
+        logging.info(
+            "[openai] %s // \"%s\"",
+            current_time,
+            poem.replace('\r', '').replace('\n', '')
+        )
         storage.write(current_time, poem)
         display.draw_text(poem, (current_time if bool(os.environ.get("CLOCKWORK_SHOW_TIME")) else False))
 
 
 def ask_ai(system, user, assistant=None, validation=None):
-    print("[Info] Ask AI")
+    if client is None:
+        init()
+    
+    logging.info(
+        "[openai] request: %s",
+        user
+    )
     messages = [
         {
             "role": "system",
@@ -98,16 +116,13 @@ def ask_ai(system, user, assistant=None, validation=None):
             model=os.environ.get("OPENAI_API_MODEL"),
         )
     except openai.APIConnectionError as e:
-        print("[Error] The server could not be reached")
-        print(e.__cause__)
+        logging.error("The server could not be reached: %s", e.__cause__)
         return False
     except openai.RateLimitError as e:
-        print("[Error] RateLimit reached")
+        logging.error("RateLimit reached")
         return False
     except openai.APIStatusError as e:
-        print("[Error]")
-        print(e.status_code)
-        print(e.response)
+        logging.error("API error (%s): %s", e.status_code, e.response)
         return False
 
     if chat_completion is not None:
@@ -119,4 +134,4 @@ def demo():
     print("[Info] Demo")
     for slogan in demo_poems:
         display.draw_text(slogan, "Demo")
-        time.sleep(3)
+        time.sleep(4)

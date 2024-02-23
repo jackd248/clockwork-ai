@@ -10,6 +10,16 @@ import os
 import display
 import poem
 import storage
+import logging
+from datetime import date
+from dotenv import load_dotenv
+envpath = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), ".env")
+vardir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'var')
+if not os.path.exists(vardir):
+    os.mkdir(vardir)
+logdir = os.path.join(vardir, 'log')
+if not os.path.exists(logdir):
+    os.mkdir(logdir)
 
 
 def main():
@@ -18,6 +28,11 @@ def main():
     :return:
     """
     args = get_arguments()
+
+    load_dotenv(envpath)
+
+    if bool(os.environ.get("CLOCKWORK_DEBUG")):
+        logging.basicConfig(filename=f"{logdir}/app_{date.today()}.log", encoding='utf-8', level=logging.INFO)
 
     if args.function == "clear":
         display.clear()
@@ -35,12 +50,10 @@ def main():
         display.draw_text(args.additional, "Custom")
     elif args.function == "ask":
         print("[Info] Ask")
-        poem.init()
         answer = poem.ask_ai(os.environ.get("OPENAI_ASK_PROMPT"), args.additional)
         if answer:
             display.draw_text(answer, "Answer")
     else:
-        poem.init()
         poem.current_time_poem()
 
 

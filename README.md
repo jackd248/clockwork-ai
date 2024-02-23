@@ -11,7 +11,7 @@ Simple diy clock project to generate ai poems by current time using a raspberry 
 
 ![clockwork prototype](img/insight.jpeg)
 
-## functions
+## general
 
 General functionalities of the python app:
 
@@ -22,7 +22,7 @@ General functionalities of the python app:
 - `python3 clockwork display <text>` - display custom text
 - `python3 clockwork ask <question>` - ask custom question to ai and display answer
 
-The storage component stores the received poems to json files, e.g. `var/12/1245.json`. If the environment variable `CLOCKWORK_REUSE` is set to true, the algorithm randomly uses stored poems instead of calling the api to reuse them. 
+The storage component stores the received poems to json files, e.g. `var/storage/12/1245.json`. If the environment variable `CLOCKWORK_REUSE` is set to true, the algorithm randomly uses stored poems instead of calling the api to reuse them. 
 
 ## project log
 
@@ -95,3 +95,7 @@ To improve the poem results by the ai, you can validate the response from the ap
 ### show time
 
 If you want to compare current time with the generated poem, activate the `CLOCKWORK_SHOW_TIME` environment variable to display the time in the bottom right corner.
+
+### debug
+
+Use the environment variable `CLOCKWORK_DEBUG` to enable file log for more debug information under e.g. `var/log/app_2024-02-23.log`.

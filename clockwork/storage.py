@@ -4,9 +4,9 @@
 import os
 import json
 import random
-vardir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'var')
-if not os.path.exists(vardir):
-    os.mkdir(vardir)
+storagedir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'var/storage')
+if not os.path.exists(storagedir):
+    os.mkdir(storagedir)
 
 
 def write(time, poem):
@@ -14,11 +14,11 @@ def write(time, poem):
 
     filename = time.replace(":", "")
     hourdir = time[:2]
-    filepath = f"{vardir}/{hourdir}/{filename}.json"
+    filepath = f"{storagedir}/{hourdir}/{filename}.json"
     content = []
 
-    if not os.path.exists(f"{vardir}/{hourdir}"):
-        os.mkdir(f"{vardir}/{hourdir}")
+    if not os.path.exists(f"{storagedir}/{hourdir}"):
+        os.mkdir(f"{storagedir}/{hourdir}")
 
     if os.path.isfile(filepath):
         with open(filepath, 'r') as openfile:
@@ -34,7 +34,7 @@ def write(time, poem):
 def read(time):
     filename = time.replace(":", "")
     hourdir = time[:2]
-    filepath = f"{vardir}/{hourdir}/{filename}.json"
+    filepath = f"{storagedir}/{hourdir}/{filename}.json"
     content = None
 
     if os.path.isfile(filepath):
