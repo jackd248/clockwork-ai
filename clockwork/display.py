@@ -88,7 +88,7 @@ def intro():
     # epd.Clear(0xFF)
 
 
-def draw_text(text, additional_text=False):
+def draw_text(text, additional_text=False, additional_hint=False):
     global font_size
     font_size = 24
     if epd is None:
@@ -113,6 +113,13 @@ def draw_text(text, additional_text=False):
             fill=0,
             align="right",
             anchor="rb"
+        )
+
+    if additional_hint and bool(os.environ.get("CLOCKWORK_DEBUG")):
+        # visual hint for reusing a stored poem
+        draw.ellipse(
+            [(epd.height-4, 2), (epd.height-2, 4)],
+            fill=0
         )
 
     epd.display(epd.getbuffer(image))
