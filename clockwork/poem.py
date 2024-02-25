@@ -8,6 +8,7 @@ import openai
 import random
 from datetime import datetime
 import display
+import requests
 import time
 import storage
 import logging
@@ -41,35 +42,27 @@ def current_time_poem():
     current_time = datetime.now().strftime("%H:%M")
     chat_completion = None
 
-    # check if option for CLOCKWORK_REUSE is enabled and random source decision (api vs storage)
-    if bool(os.environ.get("CLOCKWORK_REUSE")) and bool(random.getrandbits(1)):
-        # reuse previous poems to save rate limit
-        previous_poem = storage.read(current_time)
-        if previous_poem:
-            logging.info(
-                "[local] %s // \"%s\"",
-                current_time,
-                previous_poem.replace('\r', '').replace('\n', '')
-            )
-            display.draw_text(previous_poem)
-            return
+    if reuse_poem(current_time):
+        return
 
     poem = ask_ai(os.environ.get("OPENAI_CLOCKWORK_PROMPT"), current_time)
     if poem:
         if bool(os.environ.get("CLOCKWORK_VALIDATE")):
             original_poem = poem
-            poem = ask_ai(
+            new_poem = ask_ai(
                 os.environ.get("OPENAI_CLOCKWORK_PROMPT"),
                 current_time,
                 poem,
                 os.environ.get("OPENAI_CLOCKWORK_VALIDATION_PROMPT").replace("<current_time>", current_time)
             )
-            logging.info(
-                "[openai] %s // \"%s\" --> \"%s\"",
-                current_time,
-                original_poem.replace('\r', '').replace('\n', ''),
-                poem.replace('\r', '').replace('\n', '')
-            )
+            if new_poem:
+                poem = new_poem
+                logging.info(
+                    "[openai] %s (correct) //  \"%s\" --> \"%s\"",
+                    current_time,
+                    original_poem.replace('\r', '').replace('\n', ''),
+                    poem.replace('\r', '').replace('\n', '')
+                )
 
         logging.info(
             "[openai] %s // \"%s\"",
@@ -83,7 +76,7 @@ def current_time_poem():
 def ask_ai(system, user, assistant=None, validation=None):
     if client is None:
         init()
-    
+
     logging.info(
         "[openai] request: %s",
         user
@@ -128,6 +121,40 @@ def ask_ai(system, user, assistant=None, validation=None):
     if chat_completion is not None:
         return chat_completion.choices[0].message.content
     return False
+
+
+def reuse_poem(current_time):
+    # check if option for CLOCKWORK_REUSE is enabled and random source decision (api vs storage)
+    # or try to use a stored poem if internet connection is not available (offline mode)
+    if (bool(os.environ.get("CLOCKWORK_REUSE")) and bool(random.getrandbits(1))) or not check_connection():
+        # reuse previous poems to save rate limit
+        previous_poem = storage.read(current_time)
+        if previous_poem:
+            logging.info(
+                "[local] %s // \"%s\"",
+                current_time,
+                previous_poem.replace('\r', '').replace('\n', '')
+            )
+            display.draw_text(
+                previous_poem,
+                additional_text=(current_time if bool(os.environ.get("CLOCKWORK_SHOW_TIME")) else False),
+                additional_hint=True)
+            return True
+    return False
+
+
+def check_connection():
+    """Detect an internet connection."""
+    connection = None
+    try:
+        r = requests.get("https://openai.com")
+        r.raise_for_status()
+        connection = True
+    except:
+        logging.error("Internet connection not detected.")
+        connection = False
+    finally:
+        return connection
 
 
 def demo():
