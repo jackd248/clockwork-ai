@@ -47,7 +47,7 @@ def main():
         print(storage.read("10:21"))
     elif args.function == "display":
         print("[Info] Custom display")
-        display.draw_text(args.additional, "Custom")
+        display.draw_text(args.additional, "Custom", True)
     elif args.function == "ask":
         print("[Info] Ask")
         answer = poem.ask_ai(os.environ.get("OPENAI_ASK_PROMPT"), args.additional)
