@@ -138,7 +138,7 @@ If you want to compare current time with the generated poem, activate the `CLOCK
 
 ### Font
 
-Download a custom TrueType font and adjust the `CLOCKWORK_FONT` environment variable to adjust the displayed font. 
+Download a custom TrueType font (e.g. at https://fonts2u.com/), save them within the `font` directory and adjust the `CLOCKWORK_FONT` environment variable to adjust the displayed font. 
 
 ### Debug
 

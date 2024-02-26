@@ -8,7 +8,6 @@ libdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__)
 if os.path.exists(libdir):
     sys.path.append(libdir)
 import textwrap3
-from string import ascii_letters
 import time
 import __main__
 
@@ -19,6 +18,8 @@ if not __main__.dry_run:
 
 _epd = None
 _font = None
+_max_char_height = None
+
 
 def init():
     global _epd
@@ -80,9 +81,8 @@ def draw_text(text, additional_text=False, additional_hint=False):
     lines = text_box(text, image)
     y_text = 2
     for line in lines:
-        width, height = _font.getsize(line)
         draw.text((2, y_text), line, font=_font, fill=0)
-        y_text += height + 2
+        y_text += _max_char_height * 1.4
 
     if additional_text:
         draw.text(
@@ -107,6 +107,7 @@ def draw_text(text, additional_text=False, additional_hint=False):
 
 def text_box(text, image, font_size=36):
     global _font
+    global _max_char_height
     lines = []
 
     # consider line break in text
@@ -114,14 +115,15 @@ def text_box(text, image, font_size=36):
 
     _font = get_font(os.environ.get("CLOCKWORK_FONT"), font_size)
 
-    avg_char_width = sum(_font.getsize(char)[0] for char in ascii_letters) / len(ascii_letters)
-    max_char_count = int(image.size[0] / avg_char_width)
-    max_char_height = (max(_font.getsize(char)[0] for char in ascii_letters)) * 1.4 # line height
-    max_lines = int(image.size[1] / max_char_height)
+    avg_char_width = sum(_font.getsize(char)[0] for char in text) / len(text)
+    max_char_count = int(image.size[0] / avg_char_width) * .9
+    max_char_height = max(_font.getsize(char)[0] for char in text)
+    _max_char_height = max_char_height
+    max_lines = int(image.size[1] / (max_char_height * 1.5)) # + line height
     for tmp_line in tmp_lines:
         lines += textwrap3.wrap(tmp_line, width=max_char_count)
 
-    #print(f"font_size: {font_size} // lines: {lines} // max_lines: {max_lines} // char_count: {max_char_count} // char_width: {avg_char_width} // char_height: {max_char_height}")
+    # print(f"font_size: {font_size} // lines: {lines} // max_lines: {max_lines} // char_count: {max_char_count} // char_width: {avg_char_width} // char_height: {max_char_height}")
     if len(lines) > max_lines:
         font_size -= 2
 
