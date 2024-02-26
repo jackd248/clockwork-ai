@@ -21,7 +21,7 @@ _epd = None
 _font = None
 
 def init():
-    global epd
+    global _epd
 
     if __main__.dry_run:
         _epd = type('new', (object,), {
