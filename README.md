@@ -32,9 +32,9 @@ Currently forced for german language, but can be adjusted for custom usage, see 
 General command line functionalities of the python app:
 
 - `python3 clockwork` - generates ai poem of current time
+- `python3 clockwork 09:41` - generates ai poem of a requested time
 - `python3 clockwork clear` - clear display
 - `python3 clockwork demo` - demo poems to display
-- `python3 clockwork storage` - demo storage write and read process
 - `python3 clockwork display <text>` - display custom text
 - `python3 clockwork ask <question>` - ask custom question to ai and display answer
 

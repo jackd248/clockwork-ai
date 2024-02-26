@@ -29,16 +29,16 @@ def init():
     global client
 
     if os.environ.get("OPENAI_API_KEY") == "":
-        sys.exit("[Error] Missing openai api key")
+        sys.exit("[error] Missing openai api key")
 
     client = openai.OpenAI(
         api_key=os.environ.get("OPENAI_API_KEY"),
     )
 
 
-def current_time_poem():
+def current_time_poem(override_time=None):
     logging.info("[info] Create current time poem")
-    current_time = datetime.now().strftime("%H:%M")
+    current_time = datetime.now().strftime("%H:%M") if override_time is None else override_time
     chat_completion = None
 
     if reuse_poem(current_time):

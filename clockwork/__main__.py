@@ -7,7 +7,8 @@ Main script
 
 import argparse
 import os
-import storage
+import sys
+import re
 import logging
 from datetime import date
 from dotenv import load_dotenv
@@ -22,6 +23,7 @@ if not os.path.exists(logdir):
 
 # Dry run mode to prevent display image on e-ink display
 dry_run = False
+supported_functions = ["clear", "intro", "demo", "display", "ask"]
 
 
 def main():
@@ -38,11 +40,17 @@ def main():
 
     import display
     import poem
+    override_time = None
 
     load_dotenv(envpath)
-
     if bool(os.environ.get("CLOCKWORK_DEBUG")):
         logging.basicConfig(filename=f"{logdir}/app_{date.today()}.log", encoding='utf-8', level=logging.INFO)
+
+    if args.function is not None and args.function not in supported_functions:
+        if re.match(r"^([01]?[0-9]|2[0-3]):[0-5][0-9]$", args.function):
+            override_time = args.function
+        else:
+            sys.exit("[error] Not supported function")
 
     if args.function == "clear":
         display.clear()
@@ -52,19 +60,16 @@ def main():
         display.intro()
         poem.demo()
         display.clear()
-    elif args.function == "storage":
-        storage.write("10:21", "Lorem ipsum")
-        print(storage.read("10:21"))
     elif args.function == "display":
-        print("[Info] Custom display")
+        print("[info] Custom display")
         display.draw_text(args.additional, "Custom", True)
     elif args.function == "ask":
-        print("[Info] Ask")
+        print("[info] Ask")
         answer = poem.ask_ai(os.environ.get("OPENAI_ASK_PROMPT"), args.additional)
         if answer:
             display.draw_text(answer, "Answer")
     else:
-        poem.current_time_poem()
+        poem.current_time_poem(override_time)
 
 
 def get_arguments():
@@ -72,9 +77,10 @@ def get_arguments():
     :return:
     """
     parser = argparse.ArgumentParser(prog='clockwork/ai',
-                                     description='todo')
+                                     description='Generate ai poems by current time for displaying them on a '
+                                                 'e-ink display.')
     parser.add_argument('function',
-                        help='Additional functions to adjust the script',
+                        help='Functions to adjust the script',
                         nargs='?',
                         type=str)
     parser.add_argument('additional',
