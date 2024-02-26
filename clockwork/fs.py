@@ -8,6 +8,8 @@ storagedir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__fil
 if not os.path.exists(storagedir):
     os.makedirs(storagedir)
 
+lockfile = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'display.lock')
+
 
 def write(time, poem):
 
@@ -45,3 +47,18 @@ def read(time):
         return random.choice(content)
 
     return False
+
+
+def check_lock():
+    if os.path.isfile(lockfile):
+        return True
+    return False
+
+
+def lock():
+    open(lockfile, "w")
+
+
+def unlock():
+    if os.path.exists(lockfile):
+        os.remove(lockfile)

@@ -10,6 +10,7 @@ import os
 import sys
 import re
 import logging
+import fs
 from datetime import date
 from dotenv import load_dotenv
 
@@ -38,11 +39,24 @@ def main():
     if args.dry_run:
         dry_run = True
 
+    if fs.check_lock():
+        print("[warning] Display is currently locked, skipping execution")
+        return
+    else:
+        fs.lock()
+
+    try:
+        load_dotenv(envpath)
+        run_function(args)
+    finally:
+        fs.unlock()
+
+
+def run_function(args):
     import display
     import poem
     override_time = None
 
-    load_dotenv(envpath)
     if bool(os.environ.get("CLOCKWORK_DEBUG")):
         logging.basicConfig(filename=f"{logdir}/app_{date.today()}.log", encoding='utf-8', level=logging.INFO)
 

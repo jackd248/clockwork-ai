@@ -29,6 +29,14 @@ Simple diy clock project to generate ai poems by current time using a raspberry 
 
 Currently forced for german language, but can be adjusted for custom usage, see [Configuration](#Configuration). 
 
+### Features
+
+- generate an AI poem about the current time and display them on an e-ink display
+- display custom messages on the e-ink display
+- clear the e-ink display
+
+### Commands
+
 General command line functionalities of the python app:
 
 - `python3 clockwork` - generates ai poem of current time
@@ -42,9 +50,13 @@ The `--dry-run` option prevent the display process on the e-ink display and gene
 
 ### Reuse
 
-The storage component stores the received poems to json files, e.g. `var/storage/12/1245.json`. If the environment variable `CLOCKWORK_REUSE` is set to true, the algorithm randomly uses stored poems instead of calling the api to reuse them. 
+The fs component stores the received poems to json files, e.g. `var/storage/12/1245.json`. If the environment variable `CLOCKWORK_REUSE` is set to true, the algorithm randomly uses stored poems instead of calling the api to reuse them. 
 
 The script also checks if an internet connection is available to call the api. If not so, the script will show a stored poem if available for some kind of offline usage. 
+
+### Lock
+
+The file lock prevents the multiple execution of the python script, because this can result in display issues. 
 
 ## Project log
 

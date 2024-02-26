@@ -10,7 +10,7 @@ from datetime import datetime
 import display
 import requests
 import time
-import storage
+import fs
 import logging
 
 client = None
@@ -68,7 +68,7 @@ def current_time_poem(override_time=None):
             current_time,
             poem.replace('\r', '').replace('\n', '')
         )
-        storage.write(current_time, poem)
+        fs.write(current_time, poem)
         display.draw_text(poem, (current_time if bool(os.environ.get("CLOCKWORK_SHOW_TIME")) else False))
 
 
@@ -123,11 +123,11 @@ def ask_ai(system, user, assistant=None, validation=None):
 
 
 def reuse_poem(current_time):
-    # check if option for CLOCKWORK_REUSE is enabled and random source decision (api vs storage)
+    # check if option for CLOCKWORK_REUSE is enabled and random source decision (api vs fs)
     # or try to use a stored poem if internet connection is not available (offline mode)
     if (bool(os.environ.get("CLOCKWORK_REUSE")) and bool(random.getrandbits(1))) or not check_connection():
         # reuse previous poems to save rate limit
-        previous_poem = storage.read(current_time)
+        previous_poem = fs.read(current_time)
         if previous_poem:
             logging.info(
                 "[local] %s // \"%s\"",
