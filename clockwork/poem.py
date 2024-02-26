@@ -26,7 +26,6 @@ demo_poems = [
 
 
 def init():
-    print("[Info] Initialize openai client")
     global client
 
     if os.environ.get("OPENAI_API_KEY") == "":
@@ -38,7 +37,7 @@ def init():
 
 
 def current_time_poem():
-    print("[Info] Create current time poem")
+    logging.info("[info] Create current time poem")
     current_time = datetime.now().strftime("%H:%M")
     chat_completion = None
 
@@ -158,7 +157,7 @@ def check_connection():
 
 
 def demo():
-    print("[Info] Demo")
+    print("[info] Demo")
     for slogan in demo_poems:
         display.draw_text(slogan, "Demo")
         time.sleep(4)

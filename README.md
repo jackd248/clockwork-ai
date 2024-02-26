@@ -2,18 +2,32 @@
 
 >
 > This project is inspired by creative mind Matt Web and his beautiful [Poem/1](https://poem.town/) clock. 
-> 
+>
+
+![clockwork intro](img/intro.jpg)
 
 Simple diy clock project to generate ai poems by current time using a raspberry pi zero + e-ink display.
 
-> Am Horizont, wo Lichter blüh'n,<br/>
-> zeigt die Uhr 17:17, in Abendglüh'n.
+![clockwork demo](img/demo.jpg)
 
-![clockwork prototype](img/insight.jpeg)
+- [General](#general)
+    * [Reuse](#reuse)
+- [Project log](#project-log)
+    * [Hardware](#hardware)
+    * [Preparation](#preparation)
+    * [Prerequirements](#prerequirements)
+    * [Installation](#installation)
+    * [Permanent setup](#permanent-setup)
+- [Configuration](#configuration)
+    * [Prompt](#prompt)
+    * [Validation](#validation)
+    * [Show time](#show-time)
+    * [Debug](#debug)
+- [Development](#development)
 
-## general
+## General
 
-Currently forced for german language, but can be adjusted for custom usage, see [configuration](#configuration). 
+Currently forced for german language, but can be adjusted for custom usage, see [Configuration](#Configuration). 
 
 General command line functionalities of the python app:
 
@@ -24,30 +38,35 @@ General command line functionalities of the python app:
 - `python3 clockwork display <text>` - display custom text
 - `python3 clockwork ask <question>` - ask custom question to ai and display answer
 
-### reuse
+The `--dry-run` option prevent the display process on the e-ink display and generates images instead under `var/debug/`.
+
+### Reuse
 
 The storage component stores the received poems to json files, e.g. `var/storage/12/1245.json`. If the environment variable `CLOCKWORK_REUSE` is set to true, the algorithm randomly uses stored poems instead of calling the api to reuse them. 
 
 The script also checks if an internet connection is available to call the api. If not so, the script will show a stored poem if available for some kind of offline usage. 
 
-## project log
+## Project log
 
-### hardware
+### Hardware
 
 - [raspberry pi zero](https://www.raspberrypi.com/products/raspberry-pi-zero/)
 - [waveshare 2.13inch e-Paper](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT)
 
-### preparation
+
+<img src="img/insight.jpeg" alt="clockwork prototype" width="400"/>
+
+### Preparation
 
 - based on the waveshare [tutorial](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_Manual#Python)
 - see installation instructions for needed libraries
 
 
-### prerequirements
+### Prerequirements
 
 - api key from openai: https://platform.openai.com/api-keys
 
-### installation
+### Installation
 
 ```bash
 # get python app
@@ -61,7 +80,7 @@ cp .env.dist .env
 python3 clockwork demo
 ```
 
-### permanent setup
+### Permanent setup
 
 Set up a periodic cronjob to update the poem e.g. every minute:
 
@@ -83,27 +102,44 @@ Or set up a cronjob to update the poem on daytime:
 
 > Note that you should clear the e-ink screen to avoid display issues.
 
-## configuration
+## Configuration
 
 All configuration options are available within your `.env` file.
 
-### prompt
+### Prompt
 
 You can adjust the default openai prompt to adjust the poem results or the desired language if you edit the environment variable `OPENAI_CLOCKWORK_PROMPT` within your `.env` file:
 ```dotenv
 OPENAI_CLOCKWORK_PROMPT="You are a clock that shows the time in a two-line poem."
 ```
 
-### validation
+### Validation
 
 To improve the poem results by the ai, you can validate the response from the api again by the ai enabling the environment variable `CLOCKWORK_VALIDATE`. Therefore, a second request is sent to openai with the initial conversation messages and additional the `OPENAI_CLOCKWORK_VALIDATION_PROMPT`. 
 
-### show time
+### Show time
 
 If you want to compare current time with the generated poem, activate the `CLOCKWORK_SHOW_TIME` environment variable to display the time in the bottom right corner.
 
-### debug
+### Debug
 
 Use the environment variable `CLOCKWORK_DEBUG` to enable file log for more debug information under e.g. `var/log/app_2024-02-23.log`. 
 
 Also, a little dot is displayed in the upper right corner if a poem is reused instead of calling the openai api.
+
+## Development
+
+Use [docker](https://www.docker.com/) and [docker-compose](https://docs.docker.com/compose/) for a development context to work on the app.
+
+Build docker container:
+
+```bash
+docker compose up --build
+```
+
+Run python app within dev service:
+
+```bash
+docker-compose run dev
+$ python3 clockwork demo --dry-run
+```

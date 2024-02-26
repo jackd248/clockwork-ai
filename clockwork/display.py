@@ -9,9 +9,12 @@ if os.path.exists(libdir):
     sys.path.append(libdir)
 import textwrap3
 import time
+import __main__
 
-from waveshare_epd import epd2in13_V3
 from PIL import Image, ImageDraw, ImageFont
+
+if not __main__.dry_run:
+    from waveshare_epd import epd2in13_V3
 
 epd = None
 font_size = 20
@@ -45,10 +48,16 @@ font_size_line_config = {
 
 
 def init():
-    print("[Info] Initialize display")
     global epd
-    epd = epd2in13_V3.EPD()
-    epd.init()
+
+    if __main__.dry_run:
+        epd = type('new', (object,), {
+            "width": 122,
+            "height": 250
+        })
+    else:
+        epd = epd2in13_V3.EPD()
+        epd.init()
 
 
 def intro():
@@ -66,7 +75,7 @@ def intro():
 
     draw.line([(199, 40), (150, 40)], fill=0, width=2)
     draw.line([(199, 40), (199, 60)], fill=0, width=2)
-    epd.display(epd.getbuffer(image))
+    display(image, intro.__name__)
 
     time.sleep(2)
 
@@ -122,7 +131,8 @@ def draw_text(text, additional_text=False, additional_hint=False):
             fill=0
         )
 
-    epd.display(epd.getbuffer(image))
+    print(f"[draw] {text}")
+    display(image, draw_text.__name__)
 
 
 def splint_lines(text):
@@ -141,11 +151,26 @@ def splint_lines(text):
     return lines
 
 
-def clear():
+def display(image, name=None):
     if epd is None:
         init()
 
-    print("[Info] Clear display")
+    if __main__.dry_run:
+        debugdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'var/debug')
+        if not os.path.exists(debugdir):
+            os.makedirs(debugdir)
+        image.save(f"{debugdir}/{name}.jpg")
+    else:
+        epd.display(epd.getbuffer(image))
+
+
+def clear():
+    if __main__.dry_run:
+        return
+    if epd is None:
+        init()
+
+    print("[info] Clear display")
     epd.init()
     epd.Clear(0xFF)
     epd.sleep()

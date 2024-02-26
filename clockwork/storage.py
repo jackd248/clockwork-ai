@@ -6,15 +6,15 @@ import json
 import random
 storagedir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'var/storage')
 if not os.path.exists(storagedir):
-    os.mkdir(storagedir)
+    os.makedirs(storagedir)
 
 
 def write(time, poem):
-    print("[Info] Write to storage")
 
     filename = time.replace(":", "")
     hourdir = time[:2]
     filepath = f"{storagedir}/{hourdir}/{filename}.json"
+    print(f"[info] Write to storage: {filepath}")
     content = []
 
     if not os.path.exists(f"{storagedir}/{hourdir}"):

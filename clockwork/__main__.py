@@ -7,12 +7,11 @@ Main script
 
 import argparse
 import os
-import display
-import poem
 import storage
 import logging
 from datetime import date
 from dotenv import load_dotenv
+
 envpath = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), ".env")
 vardir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'var')
 if not os.path.exists(vardir):
@@ -21,13 +20,24 @@ logdir = os.path.join(vardir, 'log')
 if not os.path.exists(logdir):
     os.mkdir(logdir)
 
+# Dry run mode to prevent display image on e-ink display
+dry_run = False
+
 
 def main():
     """
     Main entry point for the command line. Parse the arguments and call to the main process.
     :return:
     """
+    print("### \033[1m\033[4mclockwork\033[0m\033[1m/ai\033[0m ###")
     args = get_arguments()
+
+    global dry_run
+    if args.dry_run:
+        dry_run = True
+
+    import display
+    import poem
 
     load_dotenv(envpath)
 
@@ -71,6 +81,10 @@ def get_arguments():
                         help='Additional arguments for function',
                         nargs='?',
                         type=str)
+    parser.add_argument('-dr', '--dry-run',
+                        help='Skipping drawing image to e-ink display',
+                        required=False,
+                        action='store_true')
 
     return parser.parse_args()
 
