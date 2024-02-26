@@ -8,6 +8,7 @@ libdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__)
 if os.path.exists(libdir):
     sys.path.append(libdir)
 import textwrap3
+from string import ascii_letters
 import time
 import __main__
 
@@ -16,55 +17,27 @@ from PIL import Image, ImageDraw, ImageFont
 if not __main__.dry_run:
     from waveshare_epd import epd2in13_V3
 
-epd = None
-font_size = 20
-font_size_line_config = {
-    24: {
-        "lines": 4,
-        "width": 20,
-        "line_height": 2
-    },
-    20: {
-        "lines": 5,
-        "width": 24,
-        "line_height": 0
-    },
-    16: {
-        "lines": 5,
-        "width": 32,
-        "line_height": 4
-    },
-    12: {
-        "lines": 6,
-        "width": 40,
-        "line_height": 6
-    },
-    8: {
-        "lines": 8,
-        "width": 56,
-        "line_height": 8
-    }
-}
-
+_epd = None
+_font = None
 
 def init():
     global epd
 
     if __main__.dry_run:
-        epd = type('new', (object,), {
+        _epd = type('new', (object,), {
             "width": 122,
             "height": 250
         })
     else:
-        epd = epd2in13_V3.EPD()
-        epd.init()
+        _epd = epd2in13_V3.EPD()
+        _epd.init()
 
 
 def intro():
-    if epd is None:
+    if _epd is None:
         init()
 
-    image = Image.new('1', (epd.height, epd.width), 255)
+    image = Image.new('1', (_epd.height, _epd.width), 255)
     font = ImageFont.truetype(os.path.join(fontdir, "Font.ttc"), 24)
     draw = ImageDraw.Draw(image)
     draw.text((52, 45), 'clockwork/ai', font=font, fill=0)
@@ -82,41 +55,38 @@ def intro():
     # time.sleep(0.5)
     #
     # draw.line([(115, 80), (117, 80)], fill=0, width=2)
-    # epd.displayPartial(epd.getbuffer(image))
+    # _epd.displayPartial(_epd.getbuffer(image))
     # time.sleep(0.5)
     #
     # draw.line([(120, 80), (122, 80)], fill=0, width=2)
-    # epd.displayPartial(epd.getbuffer(image))
+    # _epd.displayPartial(_epd.getbuffer(image))
     # time.sleep(0.5)
     #
     # draw.line([(125, 80), (127, 80)], fill=0, width=2)
-    # epd.displayPartial(epd.getbuffer(image))
+    # _epd.displayPartial(_epd.getbuffer(image))
     # time.sleep(0.5)
     #
-    # epd.init()
-    # epd.Clear(0xFF)
+    # _epd.init()
+    # _epd.Clear(0xFF)
 
 
 def draw_text(text, additional_text=False, additional_hint=False):
-    global font_size
-    font_size = 24
-    if epd is None:
+    if _epd is None:
         init()
 
-    image = Image.new('1', (epd.height, epd.width), 255)
+    image = Image.new('1', (_epd.height, _epd.width), 255)
     draw = ImageDraw.Draw(image)
 
-    lines = splint_lines(text)
-    font = ImageFont.truetype(os.path.join(fontdir, "Font.ttc"), font_size)
+    lines = text_box(text, image)
     y_text = 2
     for line in lines:
-        width, height = font.getsize(line)
-        draw.text((2, y_text), line, font=font, fill=0)
-        y_text += height + font_size_line_config[font_size]["line_height"]
+        width, height = _font.getsize(line)
+        draw.text((2, y_text), line, font=_font, fill=0)
+        y_text += height + 2
 
     if additional_text:
         draw.text(
-            (epd.height, epd.width),
+            (_epd.height, _epd.width),
             str(additional_text),
             font=ImageFont.truetype(os.path.join(fontdir, "Font.ttc"), 10),
             fill=0,
@@ -127,7 +97,7 @@ def draw_text(text, additional_text=False, additional_hint=False):
     if additional_hint and bool(os.environ.get("CLOCKWORK_DEBUG")):
         # visual hint for reusing a stored poem
         draw.ellipse(
-            [(epd.height-4, 2), (epd.height-2, 4)],
+            [(_epd.height-4, 2), (_epd.height-2, 4)],
             fill=0
         )
 
@@ -135,24 +105,37 @@ def draw_text(text, additional_text=False, additional_hint=False):
     display(image, draw_text.__name__)
 
 
-def splint_lines(text):
-    global font_size
+def text_box(text, image, font_size=36):
+    global _font
     lines = []
 
     # consider line break in text
     tmp_lines = text.splitlines()
+
+    _font = get_font(os.environ.get("CLOCKWORK_FONT"), font_size)
+
+    avg_char_width = sum(_font.getsize(char)[0] for char in ascii_letters) / len(ascii_letters)
+    max_char_count = int(image.size[0] / avg_char_width)
+    max_char_height = (max(_font.getsize(char)[0] for char in ascii_letters)) * 1.4 # line height
+    max_lines = int(image.size[1] / max_char_height)
     for tmp_line in tmp_lines:
-        lines += textwrap3.wrap(tmp_line, width=font_size_line_config[font_size]["width"])
+        lines += textwrap3.wrap(tmp_line, width=max_char_count)
 
-    if len(lines) > font_size_line_config[font_size]["lines"]:
-        font_size -= 4
+    #print(f"font_size: {font_size} // lines: {lines} // max_lines: {max_lines} // char_count: {max_char_count} // char_width: {avg_char_width} // char_height: {max_char_height}")
+    if len(lines) > max_lines:
+        font_size -= 2
 
-        return splint_lines(text)
+        return text_box(text, image, font_size)
+
     return lines
 
 
+def get_font(font_name, size):
+    return ImageFont.truetype(os.path.join(fontdir, font_name), size)
+
+
 def display(image, name=None):
-    if epd is None:
+    if _epd is None:
         init()
 
     if __main__.dry_run:
@@ -161,16 +144,16 @@ def display(image, name=None):
             os.makedirs(debugdir)
         image.save(f"{debugdir}/{name}.jpg")
     else:
-        epd.display(epd.getbuffer(image))
+        _epd.display(_epd.getbuffer(image))
 
 
 def clear():
     if __main__.dry_run:
         return
-    if epd is None:
+    if _epd is None:
         init()
 
     print("[info] Clear display")
-    epd.init()
-    epd.Clear(0xFF)
-    epd.sleep()
+    _epd.init()
+    _epd.Clear(0xFF)
+    _epd.sleep()

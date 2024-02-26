@@ -1,17 +1,18 @@
 # clockwork/ai
 
+![clockwork intro](img/intro.jpg)
+
 >
 > This project is inspired by creative mind Matt Web and his beautiful [Poem/1](https://poem.town/) clock. 
 >
 
-![clockwork intro](img/intro.jpg)
-
-Simple diy clock project to generate ai poems by current time using a raspberry pi zero + e-ink display.
+Simple DIY clock project to generate AI poems by current time using a raspberry pi zero + e-ink display.
 
 ![clockwork demo](img/demo.jpg)
 
 - [General](#general)
     * [Reuse](#reuse)
+    * [Lock](#lock)
 - [Project log](#project-log)
     * [Hardware](#hardware)
     * [Preparation](#preparation)
@@ -22,8 +23,10 @@ Simple diy clock project to generate ai poems by current time using a raspberry 
     * [Prompt](#prompt)
     * [Validation](#validation)
     * [Show time](#show-time)
+    * [Font](#font)
     * [Debug](#debug)
 - [Development](#development)
+- [Disclaimer](#disclaimer)
 
 ## General
 
@@ -133,6 +136,10 @@ To improve the poem results by the ai, you can validate the response from the ap
 
 If you want to compare current time with the generated poem, activate the `CLOCKWORK_SHOW_TIME` environment variable to display the time in the bottom right corner.
 
+### Font
+
+Download a custom TrueType font and adjust the `CLOCKWORK_FONT` environment variable to adjust the displayed font. 
+
 ### Debug
 
 Use the environment variable `CLOCKWORK_DEBUG` to enable file log for more debug information under e.g. `var/log/app_2024-02-23.log`. 
@@ -154,4 +161,9 @@ Run python app within dev service:
 ```bash
 docker-compose run dev
 $ python3 clockwork demo --dry-run
+$ python3 clockwork display "Test" --dry-run
 ```
+
+## Disclaimer
+
+The waveshare libraries are part of the [e-Paper](https://github.com/waveshareteam/e-Paper) repository. 
