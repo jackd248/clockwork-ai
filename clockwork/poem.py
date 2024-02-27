@@ -54,12 +54,12 @@ def current_time_poem(override_time=None):
     if reuse_poem(current_time):
         return
 
-    poem = ask_ai(os.environ.get("OPENAI_CLOCKWORK_PROMPT"), current_time)
+    poem = ask_ai(os.environ.get("OPENAI_CLOCKWORK_SYSTEM_PROMPT"), current_time)
     if poem:
         if bool(os.environ.get("CLOCKWORK_VALIDATE")):
             original_poem = poem
             new_poem = ask_ai(
-                os.environ.get("OPENAI_CLOCKWORK_PROMPT"),
+                os.environ.get("OPENAI_CLOCKWORK_SYSTEM_PROMPT"),
                 current_time,
                 poem,
                 os.environ.get("OPENAI_CLOCKWORK_VALIDATION_PROMPT").replace("<current_time>", current_time)
