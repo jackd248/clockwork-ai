@@ -124,7 +124,7 @@ All configuration options are available within your `.env` file.
 
 ### Prompt
 
-You can adjust the default openai prompt to adjust the poem results or the desired language if you edit the environment variable `OPENAI_CLOCKWORK_PROMPT` within your `.env` file:
+You can adjust the default openai prompt to adjust the poem results or the desired language if you edit the environment variable `OPENAI_CLOCKWORK_SYSTEM_PROMPT` within your `.env` file:
 ```dotenv
 OPENAI_CLOCKWORK_PROMPT="You are a clock that shows the time in a two-line poem."
 ```
@@ -172,6 +172,12 @@ $ pylint clockwork
 ```
 
 ## Project log
+
+### Concept
+
+This graphic shows the request chain for generating the AI poem by the chatgpt api:
+
+<img src="img/concept.png" alt="clockwork concept" width="400"/>
 
 ### Prompt history
 
