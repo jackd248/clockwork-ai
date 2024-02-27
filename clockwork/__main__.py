@@ -9,22 +9,8 @@ import argparse
 import os
 import sys
 import re
-import logging
+import util
 import fs
-from datetime import date
-from dotenv import load_dotenv
-
-envpath = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), ".env")
-vardir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'var')
-if not os.path.exists(vardir):
-    os.mkdir(vardir)
-logdir = os.path.join(vardir, 'log')
-if not os.path.exists(logdir):
-    os.mkdir(logdir)
-
-# Dry run mode to prevent display image on e-ink display
-dry_run = False
-supported_functions = ["clear", "intro", "demo", "display", "ask"]
 
 
 def main():
@@ -34,10 +20,10 @@ def main():
     """
     print("### \033[1m\033[4mclockwork\033[0m\033[1m/ai\033[0m ###")
     args = get_arguments()
+    util.init()
 
-    global dry_run
     if args.dry_run:
-        dry_run = True
+        util.DRY_RUN = True
 
     if fs.check_lock():
         print("[warning] Display is currently locked, skipping execution")
@@ -46,7 +32,6 @@ def main():
         fs.lock()
 
     try:
-        load_dotenv(envpath)
         run_function(args)
     finally:
         fs.unlock()
@@ -57,10 +42,7 @@ def run_function(args):
     import poem
     override_time = None
 
-    if bool(os.environ.get("CLOCKWORK_DEBUG")):
-        logging.basicConfig(filename=f"{logdir}/app_{date.today()}.log", encoding='utf-8', level=logging.INFO)
-
-    if args.function is not None and args.function not in supported_functions:
+    if args.function is not None and args.function not in util.SUPPORTED_FUNCTIONS:
         if re.match(r"^([01]?[0-9]|2[0-3]):[0-5][0-9]$", args.function):
             override_time = args.function
         else:

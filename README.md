@@ -13,11 +13,11 @@ Simple DIY clock project to generate AI poems by current time using a raspberry 
 - [General](#general)
     * [Reuse](#reuse)
     * [Lock](#lock)
-- [Project log](#project-log)
+- [Installation](#installation)
     * [Hardware](#hardware)
     * [Preparation](#preparation)
     * [Prerequirements](#prerequirements)
-    * [Installation](#installation)
+    * [Software](#software)
     * [Permanent setup](#permanent-setup)
 - [Configuration](#configuration)
     * [Prompt](#prompt)
@@ -26,6 +26,7 @@ Simple DIY clock project to generate AI poems by current time using a raspberry 
     * [Font](#font)
     * [Debug](#debug)
 - [Development](#development)
+- [Project log](#project-log)
 - [Disclaimer](#disclaimer)
 
 ## General
@@ -61,7 +62,7 @@ The script also checks if an internet connection is available to call the api. I
 
 The file lock prevents the multiple execution of the python script, because this can result in display issues. 
 
-## Project log
+## Installation
 
 ### Hardware
 
@@ -81,7 +82,7 @@ The file lock prevents the multiple execution of the python script, because this
 
 - api key from openai: https://platform.openai.com/api-keys
 
-### Installation
+### Software
 
 ```bash
 # get python app
@@ -163,6 +164,18 @@ docker-compose run dev
 $ python3 clockwork demo --dry-run
 $ python3 clockwork display "Test" --dry-run
 ```
+
+Use pylint to improve code quality:
+```bash
+docker-compose run dev
+$ pylint clockwork
+```
+
+## Project log
+
+### Prompt history
+
+@ToDo
 
 ## Disclaimer
 

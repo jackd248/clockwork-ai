@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 
+"""Module providing a function for accessing the filesystem."""
+
 import os
 import json
 import random
@@ -12,7 +14,12 @@ lockfile = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file_
 
 
 def write(time, poem):
-
+    """
+    Write poem to time file
+    :param time:
+    :param poem:
+    :return:
+    """
     filename = time.replace(":", "")
     hourdir = time[:2]
     filepath = f"{storagedir}/{hourdir}/{filename}.json"
@@ -34,6 +41,11 @@ def write(time, poem):
 
 
 def read(time):
+    """
+    Read poems from time file
+    :param time:
+    :return:
+    """
     filename = time.replace(":", "")
     hourdir = time[:2]
     filepath = f"{storagedir}/{hourdir}/{filename}.json"
@@ -50,15 +62,27 @@ def read(time):
 
 
 def check_lock():
+    """
+    Check if lock file is present
+    :return:
+    """
     if os.path.isfile(lockfile):
         return True
     return False
 
 
 def lock():
+    """
+    Create lock file
+    :return:
+    """
     open(lockfile, "w")
 
 
 def unlock():
+    """
+    Delete lock file
+    :return:
+    """
     if os.path.exists(lockfile):
         os.remove(lockfile)

@@ -1,21 +1,22 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 
-import os
-import sys
+"""Module providing a function for generating an AI poem."""
 
-import openai
-import random
 from datetime import datetime
 import display
-import requests
-import time
 import fs
 import logging
+import os
+import openai
+import random
+import requests
+import sys
+import time
 
-client = None
+CLIENT = None
 
-demo_poems = [
+DEMO_POEMS = [
     "Am Horizont, wo Lichter blüh\'n,\nzeigt die Uhr 17:17, in Abendglüh\'n.",
     "Beim Dämmerlicht, so zart und fein, \nschlägt es 17:16, der Tag neigt sich dem Sein.",
     "Die Schatten lang, der Abend naht, \n17:15, in stiller Stadt.",
@@ -26,17 +27,26 @@ demo_poems = [
 
 
 def init():
-    global client
+    """
+    Initialize openai api client
+    :return:
+    """
+    global CLIENT
 
     if os.environ.get("OPENAI_API_KEY") == "":
         sys.exit("[error] Missing openai api key")
 
-    client = openai.OpenAI(
+    CLIENT = openai.OpenAI(
         api_key=os.environ.get("OPENAI_API_KEY"),
     )
 
 
 def current_time_poem(override_time=None):
+    """
+    Create new poem about current time
+    :param override_time:
+    :return:
+    """
     logging.info("[info] Create current time poem")
     current_time = datetime.now().strftime("%H:%M") if override_time is None else override_time
     chat_completion = None
@@ -73,7 +83,15 @@ def current_time_poem(override_time=None):
 
 
 def ask_ai(system, user, assistant=None, validation=None):
-    if client is None:
+    """
+    Request the openai api
+    :param system:
+    :param user:
+    :param assistant:
+    :param validation:
+    :return:
+    """
+    if CLIENT is None:
         init()
 
     logging.info(
@@ -103,7 +121,7 @@ def ask_ai(system, user, assistant=None, validation=None):
         ]
 
     try:
-        chat_completion = client.chat.completions.create(
+        chat_completion = CLIENT.chat.completions.create(
             messages=messages,
             model=os.environ.get("OPENAI_API_MODEL"),
         )
@@ -123,6 +141,11 @@ def ask_ai(system, user, assistant=None, validation=None):
 
 
 def reuse_poem(current_time):
+    """
+    Reuse an existing poem from storage
+    :param current_time:
+    :return:
+    """
     # check if option for CLOCKWORK_REUSE is enabled and random source decision (api vs fs)
     # or try to use a stored poem if internet connection is not available (offline mode)
     if (bool(os.environ.get("CLOCKWORK_REUSE")) and bool(random.getrandbits(1))) or not check_connection():
@@ -143,7 +166,10 @@ def reuse_poem(current_time):
 
 
 def check_connection():
-    """Detect an internet connection."""
+    """
+    Detect an internet connection.
+    :return:
+    """
     connection = None
     try:
         r = requests.get("https://openai.com")
@@ -157,7 +183,11 @@ def check_connection():
 
 
 def demo():
+    """
+    Run demo poems
+    :return:
+    """
     print("[info] Demo")
-    for slogan in demo_poems:
+    for slogan in DEMO_POEMS:
         display.draw_text(slogan, "Demo")
         time.sleep(4)
