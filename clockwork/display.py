@@ -8,13 +8,14 @@ import time
 import textwrap3
 from PIL import Image, ImageDraw, ImageFont
 import util
-if not util.DRY_RUN:
-    from waveshare_epd import epd2in13_V3
 
 FONT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'font')
 LIB_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lib')
 if os.path.exists(LIB_DIR):
     sys.path.append(LIB_DIR)
+
+if not util.DRY_RUN:
+    from waveshare_epd import epd2in13_V3
 
 EPD = None
 FONT = None
