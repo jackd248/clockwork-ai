@@ -39,6 +39,10 @@ Currently forced for german language, but can be adjusted for custom usage, see 
 - display custom messages on the e-ink display
 - clear the e-ink display
 
+### Demo
+
+See a live demo here: https://jackd248.github.io/clockwork-ai/.
+
 ### Commands
 
 General command line functionalities of the python app:
