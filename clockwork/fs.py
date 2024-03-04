@@ -4,6 +4,7 @@
 """Module providing a function for accessing the filesystem."""
 
 import os
+import datetime
 import json
 import random
 storagedir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'var/storage')
@@ -63,12 +64,32 @@ def read(time):
 
 def check_lock():
     """
-    Check if lock file is present
+    Check if lock file is present and is not older then 5 minutes
     :return:
     """
     if os.path.isfile(lockfile):
-        return True
+        if check_file_expired(lockfile):
+            unlock()
+            return False
+        else:
+            return True
     return False
+
+
+def check_file_expired(file_path, expired_threshold=300):
+    """
+    Check if file is older then an expired threshold
+    """
+    if not os.path.exists(file_path):
+            return False
+
+    last_modified_time = os.path.getmtime(file_path)
+    last_modified_datetime = datetime.datetime.fromtimestamp(last_modified_time)
+    time_difference = datetime.datetime.now() - last_modified_datetime
+    if time_difference.total_seconds() > expired:
+        return True
+    else:
+        return False
 
 
 def lock():
