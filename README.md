@@ -20,6 +20,7 @@ Simple DIY clock project to generate AI poems by current time using a raspberry 
     * [Software](#software)
     * [Permanent setup](#permanent-setup)
 - [Configuration](#configuration)
+    * [Hardware support](#hardware-support)
     * [Prompt](#prompt)
     * [Validation](#validation)
     * [Show time](#show-time)
@@ -80,6 +81,11 @@ The file lock prevents the multiple execution of the python script, because this
 
 - based on the waveshare [tutorial](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_Manual#Python)
 - see installation instructions for needed libraries
+- or use [init.sh](init.sh) to install system dependencies
+
+```bash
+sh init.sh
+```
 
 
 ### Prerequirements
@@ -125,6 +131,15 @@ Or set up a cronjob to update the poem on daytime:
 ## Configuration
 
 All configuration options are available within your `.env` file.
+
+### Hardware support
+
+Currently, the both displays are supported:
+
+- 2.13inch e-Paper: `epd2in13`
+- 7.5inch e-Paper: `epd7in5`
+
+Change the `CLOCKWORK_DISPLAY` environment variable to the used hardware component.
 
 ### Prompt
 

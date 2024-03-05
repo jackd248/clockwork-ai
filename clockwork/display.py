@@ -6,20 +6,31 @@ import os
 import sys
 import time
 import textwrap3
+import importlib
 from PIL import Image, ImageDraw, ImageFont
 import util
 
 FONT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'font')
-LIB_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lib')
-if os.path.exists(LIB_DIR):
-    sys.path.append(LIB_DIR)
 
-if not util.DRY_RUN:
-    from waveshare_epd import epd2in13_V3
 
 EPD = None
 FONT = None
 MAX_CHAR_HEIGHT = None
+MAX_FONT = None
+MARGIN = None
+DISPLAY_SETTINGS = {
+    "epd2in13": {
+        "max_font": 36,
+        "letter_spacing": 1.4,
+        "margin": 2
+    },
+    "epd7in5": {
+        "max_font": 72,
+        "letter_spacing": 1.4,
+        "margin": 6
+    }
+
+}
 
 
 def init():
@@ -28,15 +39,19 @@ def init():
     :return:
     """
     global EPD
+    global MAX_FONT
+    global MARGIN
 
-    if util.DRY_RUN:
-        EPD = type('new', (object,), {
-            "width": 122,
-            "height": 250
-        })
+    lib_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'epd')
+    _epd = os.environ.get("CLOCKWORK_DISPLAY")
+    if os.path.isfile(f'{lib_dir}/{_epd}.py'):
+        epd = importlib.import_module(f'epd.{_epd}')
+        EPD = epd.init()
+
+        MAX_FONT = DISPLAY_SETTINGS[_epd]["max_font"]
+        MARGIN = DISPLAY_SETTINGS[_epd]["margin"]
     else:
-        EPD = epd2in13_V3.EPD()
-        EPD.init()
+        sys.exit(f'[error] Not supported display: {_epd}')
 
 
 def intro():
@@ -47,7 +62,7 @@ def intro():
     if EPD is None:
         init()
 
-    image = Image.new('1', (EPD.height, EPD.width), 255)
+    image = Image.new('1', (get_width(), get_height()), 255)
     font = ImageFont.truetype(os.path.join(FONT_DIR, "Font.ttc"), 24)
     draw = ImageDraw.Draw(image)
     draw.text((52, 45), 'clockwork/ai', font=font, fill=0)
@@ -62,23 +77,6 @@ def intro():
 
     time.sleep(2)
 
-    # time.sleep(0.5)
-    #
-    # draw.line([(115, 80), (117, 80)], fill=0, width=2)
-    # EPD.displayPartial(EPD.getbuffer(image))
-    # time.sleep(0.5)
-    #
-    # draw.line([(120, 80), (122, 80)], fill=0, width=2)
-    # EPD.displayPartial(EPD.getbuffer(image))
-    # time.sleep(0.5)
-    #
-    # draw.line([(125, 80), (127, 80)], fill=0, width=2)
-    # EPD.displayPartial(EPD.getbuffer(image))
-    # time.sleep(0.5)
-    #
-    # EPD.init()
-    # EPD.Clear(0xFF)
-
 
 def draw_text(text, additional_text=False, additional_hint=False):
     """
@@ -91,18 +89,18 @@ def draw_text(text, additional_text=False, additional_hint=False):
     if EPD is None:
         init()
 
-    image = Image.new('1', (EPD.height, EPD.width), 255)
+    image = Image.new('1', (get_width(), get_height()), 255)
     draw = ImageDraw.Draw(image)
 
-    lines = text_box(text, image)
-    y_text = 2
+    lines = text_box(text, image, MAX_FONT)
+    y_text = MARGIN
     for line in lines:
-        draw.text((2, y_text), line, font=FONT, fill=0)
+        draw.text((MARGIN, y_text), line, font=FONT, fill=0)
         y_text += MAX_CHAR_HEIGHT * 1.4
 
     if additional_text:
         draw.text(
-            (EPD.height, EPD.width),
+            (get_width(), get_height()),
             str(additional_text),
             font=ImageFont.truetype(os.path.join(FONT_DIR, "Font.ttc"), 10),
             fill=0,
@@ -113,7 +111,7 @@ def draw_text(text, additional_text=False, additional_hint=False):
     if additional_hint and bool(os.environ.get("CLOCKWORK_DEBUG")):
         # visual hint for reusing a stored poem
         draw.ellipse(
-            [(EPD.height-4, 2), (EPD.height-2, 4)],
+            [(get_width()-4, MARGIN), (get_width()-MARGIN, 4)],
             fill=0
         )
 
@@ -167,6 +165,26 @@ def get_font(font_name, size):
     return ImageFont.truetype(os.path.join(FONT_DIR, font_name), size)
 
 
+def get_height():
+    """
+    Get the display height of landscape mode
+    :return:
+    """
+    if EPD.height > EPD.width:
+        return EPD.width
+    return EPD.height
+
+
+def get_width():
+    """
+    Get the display width of landscape mode
+    :return:
+    """
+    if EPD.height > EPD.width:
+        return EPD.height
+    return EPD.width
+
+
 def display(image, name=None):
     """
     Display the image on the screen or save them as image
@@ -201,5 +219,5 @@ def clear():
 
     print("[info] Clear display")
     EPD.init()
-    EPD.Clear(0xFF)
+    EPD.Clear()
     EPD.sleep()
