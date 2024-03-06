@@ -86,7 +86,7 @@ def check_file_expired(file_path, expired_threshold=300):
     last_modified_time = os.path.getmtime(file_path)
     last_modified_datetime = datetime.datetime.fromtimestamp(last_modified_time)
     time_difference = datetime.datetime.now() - last_modified_datetime
-    if time_difference.total_seconds() > expired:
+    if time_difference.total_seconds() > expired_threshold:
         return True
     else:
         return False
