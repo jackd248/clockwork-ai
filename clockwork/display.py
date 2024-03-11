@@ -17,19 +17,24 @@ EPD = None
 FONT = None
 MAX_CHAR_HEIGHT = None
 MAX_FONT = None
+FONT_STEPS = None
+DOT_SIZE = None
 MARGIN = None
 DISPLAY_SETTINGS = {
     "epd2in13": {
         "max_font": 36,
+        "font_steps": 2,
+        "dot_size": 2,
         "letter_spacing": 1.4,
         "margin": 2
     },
     "epd7in5": {
-        "max_font": 72,
+        "max_font": 92,
+        "font_steps": 4,
+        "dot_size": 4,
         "letter_spacing": 1.4,
         "margin": 10
     }
-
 }
 
 
@@ -40,6 +45,8 @@ def init():
     """
     global EPD
     global MAX_FONT
+    global FONT_STEPS
+    global DOT_SIZE
     global MARGIN
 
     lib_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'epd')
@@ -49,6 +56,8 @@ def init():
         EPD = epd.init()
 
         MAX_FONT = DISPLAY_SETTINGS[_epd]["max_font"]
+        FONT_STEPS = DISPLAY_SETTINGS[_epd]["font_steps"]
+        DOT_SIZE = DISPLAY_SETTINGS[_epd]["dot_size"]
         MARGIN = DISPLAY_SETTINGS[_epd]["margin"]
     else:
         sys.exit(f'[error] Not supported display: {_epd}')
@@ -111,7 +120,7 @@ def draw_text(text, additional_text=False, additional_hint=False):
     if additional_hint and bool(os.environ.get("CLOCKWORK_DEBUG")):
         # visual hint for reusing a stored poem
         draw.ellipse(
-            [(get_width()-4, MARGIN), (get_width()-MARGIN, 4)],
+            [(get_width()-MARGIN-DOT_SIZE, MARGIN), (get_width()-MARGIN, MARGIN+DOT_SIZE)],
             fill=0
         )
 
@@ -146,9 +155,9 @@ def text_box(text, image, font_size=36):
         lines += textwrap3.wrap(tmp_line, width=max_char_count)
 
     # print(f"font_size: {font_size} // lines: {lines} // max_lines: {max_lines} // "
-    #       f"char_count: {max_char_count}  // char_width: {avg_char_width} // char_height: {max_char_height}")
+    #        f"char_count: {max_char_count}  // char_width: {avg_char_width} // char_height: {max_char_height}")
     if len(lines) > max_lines:
-        font_size -= 2
+        font_size -= FONT_STEPS
 
         return text_box(text, image, font_size)
 
