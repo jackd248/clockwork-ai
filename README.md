@@ -79,7 +79,7 @@ The file lock prevents the multiple execution of the python script, because this
 - [waveshare 2.13inch e-Paper](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT)
 
 
-<img src="img/insight.jpeg" alt="clockwork prototype" width="400"/>
+<img src="img/insight.jpg" alt="clockwork prototype" width="400"/>
 
 ### Preparation
 
@@ -221,11 +221,11 @@ Version 1:
 
 Version 2:
 
-<img src="img/version2.jpeg" alt="version2" width="400"/>
+<img src="img/version2.jpg" alt="version2" width="400"/>
 
 Version 3:
 
-<img src="img/version3.jpeg" alt="version3" width="400"/>
+<img src="img/version3.jpg" alt="version3" width="400"/>
 
 ### Prompt history
 
