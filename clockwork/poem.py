@@ -171,7 +171,7 @@ def random_bool():
     Can be influenced by the env var "CLOCKWORK_RANDOM_FACTOR"
     """
     if os.environ.get("CLOCKWORK_RANDOM_FACTOR"):
-        return not bool(random.randrange(0, int(os.environ.get("CLOCKWORK_RANDOM_FACTOR")))
+        return not bool(random.randrange(0, int(os.environ.get("CLOCKWORK_RANDOM_FACTOR"))))
     return bool(random.getrandbits(1))
 
 
