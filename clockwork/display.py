@@ -27,7 +27,7 @@ DISPLAY_SETTINGS = {
     "epd7in5": {
         "max_font": 72,
         "letter_spacing": 1.4,
-        "margin": 6
+        "margin": 10
     }
 
 }
@@ -195,6 +195,7 @@ def display(image, name=None):
     if EPD is None:
         init()
 
+    image = image.rotate(calc_rotation())
     if util.DRY_RUN:
         debugdir = os.path.join(
             os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
@@ -205,6 +206,15 @@ def display(image, name=None):
         image.save(f"{debugdir}/{name}.jpg")
     else:
         EPD.display(EPD.getbuffer(image))
+
+
+def calc_rotation():
+    """
+    Calculate the rotation of the image
+    """
+    if os.environ.get("CLOCKWORK_ROTATE"):
+        return int(os.environ.get("CLOCKWORK_ROTATE"))
+    return 0
 
 
 def clear():

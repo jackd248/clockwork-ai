@@ -24,10 +24,14 @@ Simple DIY clock project to generate AI poems by current time using a raspberry 
     * [Prompt](#prompt)
     * [Validation](#validation)
     * [Show time](#show-time)
+    * [Display rotation](#display-rotation)
+    * [Coincidence](#coincidence)
     * [Font](#font)
     * [Debug](#debug)
 - [Development](#development)
 - [Project log](#project-log)
+  * [Concept](#concept)
+  * [Prototype](#prototype)
 - [Disclaimer](#disclaimer)
 
 ## General
@@ -156,9 +160,18 @@ To improve the poem results by the ai, you can validate the response from the ap
 
 If you want to compare current time with the generated poem, activate the `CLOCKWORK_SHOW_TIME` environment variable to display the time in the bottom right corner.
 
+### Display rotation
+
+Use the `CLOCKWORK_ROTATE` environment variable to define the degree of rotation, e.g. 180.
+
 ### Font
 
 Download a custom TrueType font (e.g. at https://fonts2u.com/), save them within the `font` directory and adjust the `CLOCKWORK_FONT` environment variable to adjust the displayed font. 
+
+
+### Coincidence
+
+To influence the random function for choosing between api request and storage, set and increase the `CLOCKWORK_RANDOM_FACTOR` environment variable with an integer. Normally, it's 1 (api) to 1 (storage) as ratio. To increase the usage of the storage increase the env var, e.g. to 8 for 1 (api) to 8 (storage).
 
 ### Debug
 
@@ -197,6 +210,22 @@ $ pylint clockwork
 This graphic shows the request chain for generating the AI poem by the chatgpt api:
 
 <img src="img/concept.png" alt="clockwork concept" width="400"/>
+
+### Prototype
+
+The following pictures show the iterations of the prototype.
+
+Version 1:
+
+<img src="img/version1.jpg" alt="version1" width="400"/>
+
+Version 2:
+
+<img src="img/version2.jpeg" alt="version2" width="400"/>
+
+Version 3:
+
+<img src="img/version3.jpeg" alt="version3" width="400"/>
 
 ### Prompt history
 

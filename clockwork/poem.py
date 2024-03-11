@@ -148,7 +148,7 @@ def reuse_poem(current_time):
     """
     # check if option for CLOCKWORK_REUSE is enabled and random source decision (api vs fs)
     # or try to use a stored poem if internet connection is not available (offline mode)
-    if (bool(os.environ.get("CLOCKWORK_REUSE")) and bool(random.getrandbits(1))) or not check_connection():
+    if (bool(os.environ.get("CLOCKWORK_REUSE")) and random_bool()) or not check_connection():
         # reuse previous poems to save rate limit
         previous_poem = fs.read(current_time)
         if previous_poem:
@@ -163,6 +163,16 @@ def reuse_poem(current_time):
                 additional_hint=True)
             return True
     return False
+
+
+def random_bool():
+    """
+    Returns a random bool
+    Can be influenced by the env var "CLOCKWORK_RANDOM_FACTOR"
+    """
+    if os.environ.get("CLOCKWORK_RANDOM_FACTOR"):
+        return not bool(random.randrange(0, int(os.environ.get("CLOCKWORK_RANDOM_FACTOR")))
+    return bool(random.getrandbits(1))
 
 
 def check_connection():
