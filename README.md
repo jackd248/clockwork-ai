@@ -75,26 +75,21 @@ The file lock prevents the multiple execution of the python script, because this
 
 ### Hardware
 
-- [raspberry pi zero](https://www.raspberrypi.com/products/raspberry-pi-zero/)
-- [waveshare 2.13inch e-Paper](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT)
+- raspberry pi zero wh
+- [waveshare 2.13inch e-Paper](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT) or [waveshare 7.5inch e-Paper](https://www.waveshare.com/wiki/7.5inch_e-Paper_HAT)
 
 
 <img src="img/insight.jpg" alt="clockwork prototype" width="400"/>
 
 ### Preparation
 
-- based on the waveshare [tutorial](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_Manual#Python)
-- see installation instructions for needed libraries
-- or use [init.sh](init.sh) to install system dependencies
-
-```bash
-sh init.sh
-```
+- based on the waveshare [tutorial](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_Manual)
+  - see initialization and installation instructions for the raspberry and the needed libraries
 
 
 ### Prerequirements
 
-- api key from openai: https://platform.openai.com/api-keys
+- get an api key from openai: https://platform.openai.com/api-keys
 
 ### Software
 
@@ -104,10 +99,22 @@ git clone https://github.com/jackd248/clockwork-ai.git
 cd clockwork-ai
 # install python requirements
 pip3 install -r requirements.txt
-# prepare settings and store own openai api key!
+# prepare settings
 cp .env.dist .env
 # run demo
 python3 clockwork demo
+```
+
+You need to store your openai api key as environment variable within the `.env` file:
+
+```dotenv
+OPENAI_API_KEY='xxx'
+```
+
+Run the clockwork script to generate a poem:
+
+```bash
+python3 clockwork
 ```
 
 ### Permanent setup
@@ -125,16 +132,21 @@ crontab -e
 Or set up a cronjob to update the poem on daytime:
 
 ```cronexp
-@reboot python3 /path/to/clockwork/dir clockwork intro
 * 06-23 * * * python3 /path/to/clockwork/dir clockwork
 10 23 * * * python3 /path/to/clockwork/dir clockwork clear
 ```
 
 > Note that you should clear the e-ink screen to avoid display issues.
 
+
+> I would suggest to clear the screen if the display is not used for a longer time, e.g. at night.
+
+
 ## Configuration
 
-All configuration options are available within your `.env` file.
+All further configuration options are available within your `.env` file.
+
+The 3.5 model is stored as default model for the openai api because it's the cheapest one so far. If you want to use another model, adjust the `OPENAI_API_MODEL` environment variable. See https://platform.openai.com/docs/models.
 
 ### Hardware support
 
@@ -166,8 +178,7 @@ Use the `CLOCKWORK_ROTATE` environment variable to define the degree of rotation
 
 ### Font
 
-Download a custom TrueType font (e.g. at https://fonts2u.com/), save them within the `font` directory and adjust the `CLOCKWORK_FONT` environment variable to adjust the displayed font. 
-
+Download a custom TrueType font (e.g. at https://fonts2u.com/), save them within the `font` directory and adjust the `CLOCKWORK_FONT` environment variable to adjust the displayed font.
 
 ### Coincidence
 
@@ -215,21 +226,17 @@ This graphic shows the request chain for generating the AI poem by the chatgpt a
 
 The following pictures show the iterations of the prototype.
 
-Version 1:
+*Version 1:* simple prototype with a raspberry pi zero and the 2.13inch e-Paper display
 
 <img src="img/version1.jpg" alt="version1" width="400"/>
 
-Version 2:
+*Version 2:* using a pwnagotchi case
 
 <img src="img/version2.jpg" alt="version2" width="400"/>
 
-Version 3:
+*Version 3:* using a bigger 7.5inch e-Paper display and simple ikea picture frame
 
 <img src="img/version3.jpg" alt="version3" width="400"/>
-
-### Prompt history
-
-@ToDo
 
 ## Disclaimer
 
