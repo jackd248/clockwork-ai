@@ -182,11 +182,20 @@ def check_connection():
     """
     connection = None
     try:
-        r = requests.get("https://openai.com")
+        r = requests.get("https://www.google.de/")
         r.raise_for_status()
         connection = True
-    except:
-        logging.error("Internet connection not detected.")
+    except requests.ConnectionError as e:
+        logging.error("Connection error: %s", e)
+        connection = False
+    except requests.HTTPError as e:
+        logging.error("HTTP error: %s", e)
+        connection = False
+    except requests.Timeout as e:
+        logging.error("Timeout error: %s", e)
+        connection = False
+    except requests.RequestException as e:
+        logging.error("Request exception: %s", e)
         connection = False
     finally:
         return connection
